@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b3a55">
+<title>까데기</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif;background:#d9dde3;color:#1d2430;-webkit-tap-highlight-color:transparent}
+header{background:#2b3a55;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px}
+header h1{font-size:19px;font-weight:700}
+header .sub{font-size:12px;opacity:.75}
+header .grow{flex:1;min-width:0}
+#back{background:none;border:0;color:#fff;font-size:22px;padding:0 6px 0 0;display:none}
+#editBtn{display:none;background:#fff;color:#2b3a55;border:0;border-radius:16px;padding:6px 14px;font-size:14px;font-weight:700}
+#editBtn.on{background:#ffd54a}
+main{padding:12px;max-width:720px;margin:0 auto 60px}
+.warn{background:#fff6d6;border:1px solid #e6c95a;color:#6b5205;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:12px;line-height:1.5}
+.letter{font-size:13px;font-weight:700;color:#55607a;margin:14px 2px 6px}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,.08);cursor:pointer}
+.card b{font-size:16px}
+.card span{font-size:12px;color:#66708a;display:block;margin-top:4px;line-height:1.4}
+.card .ed{color:#b36b00;font-size:11px;font-weight:700;margin-left:6px}
+.tag{display:inline-block;font-size:11px;font-weight:700;background:#e8eefc;color:#1f4fd1;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:2px;font-style:normal}
+.full{font-size:12px;color:#66708a;margin-bottom:8px}
+.wbox{background:#fff;border-radius:10px;padding:12px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wrow{display:flex;align-items:center;gap:8px}
+.wrow label{font-size:14px;font-weight:700;white-space:nowrap}
+.wrow input{flex:1;font-size:22px;font-weight:700;padding:6px 10px;border:2px solid #2b3a55;border-radius:8px;text-align:right;min-width:0}
+.wrow em{font-style:normal;font-weight:700}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.quick button{border:1px solid #b8c0cf;background:#f2f4f8;border-radius:16px;padding:5px 11px;font-size:13px}
+.quick button.on{background:#2b3a55;color:#fff;border-color:#2b3a55}
+.state{font-size:12px;margin-top:8px;color:#55607a}
+.state.out{color:#b3261e;font-weight:700}
+.nobox{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:#66708a}
+.stage{display:flex;gap:10px;background:#eef0f3;border:1px solid #c5cbd5;border-radius:10px;padding:10px}
+.pic{width:104px;flex:none;display:flex;flex-direction:column;align-items:center}
+.pic svg{width:100px;height:110px}
+.plate{font-size:12px;font-weight:700;color:#fff;padding:3px 6px;border-radius:3px;text-align:center;line-height:1.3;margin-top:2px;word-break:keep-all}
+.hz{margin-top:5px;background:#5fe05f;color:#0d3d0d;font-size:12px;font-weight:700;border:1px solid #2e8b2e;padding:2px 6px;border-radius:3px;text-align:center;word-break:keep-all}
+.p-mixer{background:#1f4fd1}.p-tank{background:#e2562f}.p-mill{background:#e2562f}.p-filter{background:#3f8f5a}.p-mobile{background:#1f4fd1}.p-trough{background:#e2562f}.p-small{background:#7a5bc7}
+.info{flex:1;min-width:0}
+.steps{list-style:none;font-size:13px;line-height:1.5}
+.steps li{margin-bottom:3px}
+.steps li.star{color:#b3261e;font-weight:700}
+.steps i{font-style:normal;background:#5fe05f;color:#0d3d0d;border:1px solid #2e8b2e;border-radius:3px;font-size:11px;font-weight:700;padding:0 4px;margin-left:4px;white-space:nowrap}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;background:#fff;border-radius:6px;overflow:hidden}
+td{padding:5px 6px;border-bottom:1px solid #e3e6ec}
+td.o{width:20px;color:#fff;background:#55607a;text-align:center;font-size:11px;font-weight:700}
+td.v{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.v.q{color:#b3261e}
+td.v small{display:block;font-weight:400;font-size:11px;color:#55607a}
+.pipe{width:104px;display:flex;justify-content:center;height:26px}
+.pipe div{width:4px;background:#7d8696;position:relative}
+.pipe div:after{content:"";position:absolute;bottom:-2px;left:-6px;border:8px solid transparent;border-top:9px solid #7d8696;border-bottom:0}
+.total{background:#2b3a55;color:#fff;border-radius:10px;padding:10px 12px;margin-top:12px;display:flex;justify-content:space-between;font-weight:700}
+.notes{background:#fff;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:13px;line-height:1.6}
+.notes h3{font-size:13px;margin-bottom:4px;color:#55607a}
+/* 편집 */
+.ehelp{background:#fff3c4;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.5;margin-bottom:10px;color:#5c4700}
+.ename{width:100%;font-size:14px;font-weight:700;padding:6px;border:1px solid #9aa3b5;border-radius:6px;margin-bottom:6px}
+.er{display:flex;gap:4px;margin-bottom:4px;align-items:center}
+.er input{font-size:13px;padding:6px 5px;border:1px solid #b8c0cf;border-radius:5px;min-width:0}
+.er .et{flex:1}
+.er .es{width:46px;text-align:center;border-color:#2e8b2e;background:#effbef}
+.er button{flex:none;width:30px;height:30px;border:1px solid #b8c0cf;background:#fff;border-radius:5px;font-size:14px}
+.er.b .et{color:#b3261e;font-weight:700}
+.er.b .bs{background:#b3261e;color:#fff;border-color:#b3261e}
+.add{border:1px dashed #7d8696;background:none;border-radius:6px;padding:6px;width:100%;font-size:13px;color:#55607a;margin-top:2px}
+.ebar{position:fixed;left:0;right:0;bottom:0;background:#2b3a55;display:flex;gap:6px;padding:8px;z-index:6}
+.ebar button{flex:1;border:0;border-radius:8px;padding:11px 0;font-size:14px;font-weight:700}
+.ebar .sv{background:#ffd54a;color:#2b3a55}.ebar .cc{background:#fff;color:#2b3a55}.ebar .rs{background:#e2562f;color:#fff}
+.bk{display:flex;gap:6px;margin-top:20px}
+.bk button{flex:1;border:1px solid #9aa3b5;background:#fff;border-radius:8px;padding:9px;font-size:13px}
+.bk textarea{width:100%}
+#bkArea{display:none;margin-top:8px}
+#bkArea textarea{width:100%;height:120px;font-size:11px;border-radius:6px;border:1px solid #9aa3b5;padding:6px}
+#bkArea button{margin-top:6px;width:100%;border:0;background:#2b3a55;color:#fff;border-radius:8px;padding:10px;font-weight:700}
+</style>
+</head>
+<body>
+<header><button id="back" onclick="history.back()">‹</button><div class="grow"><h1 id="ttl">까데기</h1><div class="sub" id="sub">작업 공정순서</div></div><button id="editBtn">편집</button></header>
+<main id="app"></main>
+<script>
+// ===== 데이터 =====
+// steps 글: "!"로 시작 = 빨간 강조 / "|숫자" = 그 줄의 교반속도(Hz)
+let P=[];
+
+// ===== 탱크 그림 =====
+const M=(x,y,c="#5fd3d3")=>`<circle cx="${x}" cy="${y}" r="9" fill="${c}" stroke="#2a6f75"/><text x="${x}" y="${y+4}" font-size="11" font-weight="700" text-anchor="middle" fill="#0b3d40">M</text>`;
+const SVG={
+ mixer:f=>`<path d="M16 40 Q16 26 50 26 Q84 26 84 40 L84 70 L57 96 L43 96 L16 70 Z" fill="${f||'#e9d08f'}" stroke="#8a6d1e" stroke-width="1.5"/><line x1="50" y1="21" x2="50" y2="78" stroke="#555" stroke-width="2"/><path d="M34 78 L66 78" stroke="#d33" stroke-width="5" stroke-linecap="round"/><rect x="45" y="96" width="10" height="9" fill="#777"/>${M(50,13)}`,
+ tank:()=>`<rect x="20" y="28" width="60" height="58" rx="10" fill="#f6f6f6" stroke="#888" stroke-width="1.5"/><line x1="26" y1="86" x2="24" y2="104" stroke="#888" stroke-width="3"/><line x1="74" y1="86" x2="76" y2="104" stroke="#888" stroke-width="3"/><line x1="50" y1="21" x2="50" y2="72" stroke="#555" stroke-width="2"/><path d="M36 72 L64 72" stroke="#3a3" stroke-width="5" stroke-linecap="round"/><rect x="46" y="86" width="8" height="10" fill="#c33"/>${M(50,13)}`,
+ mill:()=>`<rect x="22" y="14" width="34" height="12" fill="#f3e2b3" stroke="#8a6d1e"/><text x="39" y="24" font-size="10" text-anchor="middle" fill="#333">1호</text><rect x="10" y="26" width="80" height="22" rx="3" fill="#6f6ff2" stroke="#3a3aa0"/><rect x="22" y="60" width="34" height="12" fill="#f3e2b3" stroke="#8a6d1e"/><text x="39" y="70" font-size="10" text-anchor="middle" fill="#333">2호</text><rect x="10" y="72" width="80" height="22" rx="3" fill="#6f6ff2" stroke="#3a3aa0"/>`,
+ filter:()=>`<rect x="24" y="16" width="20" height="66" rx="8" fill="#dfe3ea" stroke="#667" stroke-width="1.5"/><rect x="56" y="16" width="20" height="66" rx="8" fill="#dfe3ea" stroke="#667" stroke-width="1.5"/><rect x="16" y="86" width="68" height="10" fill="#4a5bd4"/>`,
+ mobile:()=>`<rect x="38" y="6" width="24" height="14" rx="2" fill="#5fd3d3" stroke="#2a6f75"/><rect x="22" y="22" width="56" height="58" rx="8" fill="#a3a9b0" stroke="#666" stroke-width="1.5"/><line x1="50" y1="20" x2="50" y2="62" stroke="#3a3" stroke-width="3"/><path d="M34 62 L66 62" stroke="#3a3" stroke-width="6" stroke-linecap="round"/><circle cx="30" cy="92" r="8" fill="#333"/><circle cx="70" cy="92" r="8" fill="#333"/>`,
+ small:()=>`<rect x="32" y="36" width="36" height="46" rx="8" fill="#d8dce2" stroke="#666" stroke-width="1.5"/><line x1="50" y1="28" x2="50" y2="72" stroke="#555" stroke-width="2"/><path d="M40 72 L60 72" stroke="#d33" stroke-width="4" stroke-linecap="round"/>${M(50,20,"#b7a3f0")}`,
+ trough:()=>`<path d="M10 40 L10 82 L90 82 L90 40" fill="#fff" stroke="#555" stroke-width="2"/><rect x="12" y="62" width="76" height="18" fill="#c9d6f0"/><text x="50" y="34" font-size="10" text-anchor="middle" fill="#555">레벨 T/K</text>`
+};
+
+// ===== 저장 (내가 고친 글) =====
+const LS="kkadegi_w_", LE="kkadegi_edit_";
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){alert('저장 실패')}};
+function parseStep(x){const b=x[0]==='!';if(b)x=x.slice(1);const i=x.lastIndexOf('|');return i>=0?{t:x.slice(0,i),s:x.slice(i+1),b}:{t:x,s:'',b}}
+function view(p){ // 기본 데이터 + 내가 고친 글 합치기
+ let e=null; try{e=JSON.parse(lsGet(LE+p.id))}catch(_){}
+ const stages=p.stages.map((s,i)=>{
+  const o=e&&e.stages&&e.stages[i];
+  return {...s, n:o?o.n:s.n, steps:o?o.steps:s.steps.map(parseStep)};
+ });
+ return {stages, notes:e&&e.notes?e.notes:(p.notes||[]), edited:!!e};
+}
+
+// ===== 배합 데이터 (폰 안에만 저장) =====
+const LD="kkadegi_data";
+function loadData(){
+ P=[]; try{const d=JSON.parse(lsGet(LD)); if(d&&Array.isArray(d.products)) P=d.products}catch(e){}
+ P.sort((a,b)=>a.name.localeCompare(b.name,'en',{numeric:true}));
+}
+function pickData(){
+ const f=document.createElement('input'); f.type='file';
+ f.onchange=()=>{const file=f.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);
+    if(!d||d.app!=="kkadegi"||!Array.isArray(d.products)||!d.products.every(p=>p.id&&p.name&&Array.isArray(p.stages))) throw 0;
+    lsSet(LD,JSON.stringify(d)); loadData(); alert('작업 '+P.length+'개 불러왔습니다'); location.hash=''; list();
+   }catch(e){alert('까데기 데이터 파일이 아닙니다')}};
+  r.readAsText(file);
+ };
+ f.click();
+}
+function clearData(){
+ if(!confirm('이 폰에 저장된 배합 데이터를 지울까요?\n(고친 글은 남아 있습니다)')) return;
+ lsSet(LD,null); loadData(); location.hash=''; list();
+}
+
+// ===== 계산 =====
+function dec(vals){let d=0;vals.forEach(v=>{if(v!=null){const s=String(v);const i=s.indexOf('.');if(i>=0)d=Math.max(d,s.length-i-1)}});return d}
+function calc(vals,cols,w){
+ const i=cols.indexOf(w);
+ if(i>=0) return {v:vals[i],ex:true};
+ if(w<cols[0]){const v=vals[0];return {v:v==null?null:v/cols[0]*w,out:true}}
+ const L=cols.length-1;
+ if(w>cols[L]){const v=vals[L];return {v:v==null?null:v/cols[L]*w,out:true}}
+ let k=0;while(cols[k+1]<w)k++;
+ const a=vals[k],b=vals[k+1];
+ if(a==null||b==null) return {v:null};
+ return {v:a+(b-a)*(w-cols[k])/(cols[k+1]-cols[k])};
+}
+function fmt(r,vals){if(r.v==null)return '?';let d=dec(vals);if(!r.ex)d=Math.max(d,1);return r.v.toFixed(d)}
+function extra(v,opt){
+ if(!opt||v==null) return '';
+ if(opt.bag){const n=Math.floor(v/opt.bag),r=Math.round((v-n*opt.bag)*10)/10;return `${opt.bag}kg × ${n}개${r?' + '+r:''}`}
+ if(opt.first){const rest=v-opt.first;return rest>0?`${opt.first} 먼저 + 나머지 ${rest.toFixed(1)}`:`${opt.first} 먼저 ?`}
+ return '';
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const indent=t=>esc(t).replace(/^ +/,m=>'&nbsp;'.repeat(m.length*2));
+function speeds(steps){const a=[];steps.forEach(x=>{const s=String(x.s||'').trim();if(s&&a[a.length-1]!==s)a.push(s)});return a}
+
+// ===== 화면 =====
+const app=document.getElementById('app'), eb=document.getElementById('editBtn');
+let editing=false, cur=null;
+function list(){
+ editing=false; cur=null;
+ document.getElementById('back').style.display='none'; eb.style.display='none';
+ document.getElementById('ttl').textContent='까데기';
+ document.getElementById('sub').textContent='작업 공정순서';
+ if(!P.length){
+  app.innerHTML=`<div class="wbox" style="text-align:center;padding:24px 14px;line-height:1.7"><b style="font-size:16px">배합 데이터가 없습니다</b><br><span style="font-size:13px;color:#66708a">처음 한 번만 데이터 파일(kkadegi-data.json)을 불러오세요.<br>불러온 데이터는 이 폰 안에만 저장됩니다.</span><br><button onclick="pickData()" style="margin-top:14px;border:0;background:#2b3a55;color:#fff;border-radius:8px;padding:12px 22px;font-size:15px;font-weight:700">데이터 불러오기</button></div>`;
+  return;
+ }
+ let h='<div class="warn">참고용입니다. 실제 투입량은 처방표가 우선 · <b>?</b> 는 확인 필요</div>';
+ let last='';
+ P.forEach(p=>{
+  const L=/^[0-9]/.test(p.name)?'#':p.name[0].toUpperCase();
+  if(L!==last){h+=`<div class="letter">${L}</div>`;last=L}
+  const v=view(p);
+  h+=`<div class="card" onclick="location.hash='${p.id}'"><b>${esc(p.name)}</b>${p.tag?`<i class="tag">${esc(p.tag)}</i>`:''}${v.edited?'<em class="ed">수정함</em>':''}<span>${v.stages.map(s=>esc(s.n)).join(' → ')}</span></div>`;
+ });
+ h+=`<div class="bk"><button onclick="bk(1)">고친 글 백업</button><button onclick="bk(2)">백업 불러오기</button></div><div id="bkArea"></div>`;
+ h+=`<div class="bk" style="margin-top:8px"><button onclick="pickData()">데이터 다시 불러오기</button><button onclick="clearData()">데이터 지우기</button></div>`;
+ app.innerHTML=h; scrollTo(0,0);
+}
+function bk(m){
+ const a=document.getElementById('bkArea'); a.style.display='block';
+ if(m===1){
+  const o={}; P.forEach(p=>{const v=lsGet(LE+p.id); if(v) o[p.id]=JSON.parse(v)});
+  a.innerHTML=`<textarea readonly>${esc(JSON.stringify(o))}</textarea><button onclick="navigator.clipboard&&navigator.clipboard.writeText(this.previousElementSibling.value).then(()=>alert('복사했습니다'))">복사</button>`;
+ } else {
+  a.innerHTML=`<textarea placeholder="백업한 글을 붙여넣으세요"></textarea><button onclick="bkIn(this.previousElementSibling.value)">불러오기</button>`;
+ }
+}
+function bkIn(t){
+ try{const o=JSON.parse(t);let n=0;Object.keys(o).forEach(k=>{if(P.some(p=>p.id===k)){lsSet(LE+k,JSON.stringify(o[k]));n++}});alert(n+'개 작업 불러옴');list()}
+ catch(e){alert('형식이 맞지 않습니다')}
+}
+
+function detail(p){
+ cur=p;
+ document.getElementById('back').style.display='block';
+ eb.style.display='block'; eb.textContent=editing?'편집 중':'편집'; eb.classList.toggle('on',editing);
+ document.getElementById('ttl').textContent=p.name;
+ document.getElementById('sub').textContent=p.tag||'공정순서';
+ const v=view(p), has=p.cols.length>0;
+ let w; if(has){w=parseFloat(lsGet(LS+p.id)); if(!w) w=p.cols[p.cols.length-1];}
+ let h=p.full?`<div class="full">${esc(p.full)}</div>`:'';
+ if(editing) h+='<div class="ehelp">글을 고치거나 ✕로 지우고, + 로 줄을 추가하세요.<br>! 버튼 = 빨간 강조 · 초록 칸 = 그 줄의 교반속도(Hz)<br>저장하면 이 폰에만 저장됩니다.</div>';
+ else h+=has?`<div class="wbox"><div class="wrow"><label>총 믹싱량</label><input id="w" type="number" inputmode="decimal" value="${w}"><em>kg</em></div>
+ <div class="quick">${p.cols.map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div><div class="state" id="st"></div></div>`
+ :`<div class="nobox">배합량 표가 없어서 무게 계산은 안 됩니다 · 재료와 순서만</div>`;
+ v.stages.forEach((s,si)=>{
+  if(si) h+='<div class="pipe"><div></div></div>';
+  const sp=speeds(s.steps);
+  h+=`<div class="stage"><div class="pic"><svg viewBox="0 0 100 110">${SVG[s.t](s.fill)}</svg><div class="plate p-${s.t}">${esc(s.n)}</div>${sp.length?`<div class="hz">교반 ${esc(sp.join(' → '))} Hz</div>`:''}</div><div class="info" data-si="${si}">`;
+  if(editing){
+   h+=`<input class="ename" value="${esc(s.n)}"><div class="rows">${s.steps.map(x=>rowHtml(x)).join('')}</div><button class="add" onclick="addRow(this)">+ 줄 추가</button>`;
+  } else {
+   h+='<ul class="steps">'+s.steps.map(x=>`<li${x.b?' class="star"':''}>${indent(x.t)}${x.s?`<i>${esc(x.s)}Hz</i>`:''}</li>`).join('')+'</ul>';
+  }
+  if(s.mats) h+='<table>'+s.mats.map((m,mi)=>`<tr><td class="o">${m[0]}</td><td>${esc(m[1])}</td>${m[2]&&has&&!editing?`<td class="v" data-s="${si}" data-m="${mi}"></td>`:''}</tr>`).join('')+'</table>';
+  h+='</div></div>';
+ });
+ if(has&&!editing) h+='<div class="total"><span>재료 합계</span><span id="tot"></span></div>';
+ if(editing){
+  h+=`<div class="notes" id="enotes"><h3>메모</h3><div class="rows">${v.notes.map(n=>rowHtml({t:n,s:'',b:false},true)).join('')}</div><button class="add" onclick="addRow(this,true)">+ 메모 추가</button></div>`;
+  h+=`<div class="ebar"><button class="cc" onclick="setEdit(false)">취소</button><button class="rs" onclick="resetEdit()">원래대로</button><button class="sv" onclick="saveEdit()">저장</button></div>`;
+ } else if(v.notes.length) h+='<div class="notes"><h3>메모</h3>'+v.notes.map(n=>'· '+esc(n)).join('<br>')+'</div>';
+ app.innerHTML=h;
+ if(!has||editing) return;
+ const inp=document.getElementById('w');
+ const upd=()=>{
+  const val=parseFloat(inp.value);
+  document.querySelectorAll('.quick button').forEach(b=>b.classList.toggle('on',+b.dataset.c===val));
+  const st=document.getElementById('st');
+  if(!val||val<=0){st.textContent='무게를 입력하세요';st.className='state';return}
+  lsSet(LS+p.id,val);
+  let tot=0,q=false,out=false,ex=p.cols.includes(val);
+  document.querySelectorAll('td.v').forEach(td=>{
+   const m=p.stages[+td.dataset.s].mats[+td.dataset.m];
+   const r=calc(m[2],p.cols,val); if(r.out) out=true;
+   const x=extra(r.v,m[3]);
+   td.innerHTML=esc(fmt(r,m[2]))+(x?`<small>${esc(x)}</small>`:'');
+   td.classList.toggle('q',r.v==null);
+   if(r.v==null) q=true; else tot+=r.v;
+  });
+  document.getElementById('tot').textContent=(q?'? 제외 ':'')+tot.toFixed(1)+' kg';
+  st.className='state'+(out?' out':'');
+  st.textContent=out?'표 범위 밖 ('+p.cols[0]+'~'+p.cols[p.cols.length-1]+'kg) · 비례 계산 · 참고용':ex?'표 값 그대로':'표 사이 값 · 비례 계산';
+ };
+ inp.addEventListener('input',upd);
+ document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>{inp.value=b.dataset.c;upd()});
+ upd();
+}
+
+// ===== 편집 =====
+function rowHtml(x,note){
+ return `<div class="er${x.b?' b':''}">${note?'':`<button class="bs" onclick="this.parentNode.classList.toggle('b')">!</button>`}<input class="et" value="${esc(x.t)}">${note?'':`<input class="es" inputmode="decimal" placeholder="Hz" value="${esc(x.s||'')}">`}<button onclick="this.parentNode.remove()">✕</button></div>`;
+}
+function addRow(btn,note){
+ const box=btn.previousElementSibling; box.insertAdjacentHTML('beforeend',rowHtml({t:'',s:'',b:false},note));
+ box.lastElementChild.querySelector('.et').focus();
+}
+function setEdit(on){editing=on; detail(cur); if(!on) scrollTo(0,0)}
+function saveEdit(){
+ const o={stages:[],notes:[]};
+ document.querySelectorAll('.info[data-si]').forEach(inf=>{
+  const steps=[];
+  inf.querySelectorAll('.er').forEach(r=>{
+   const t=r.querySelector('.et').value, s=r.querySelector('.es').value.trim();
+   if(t.trim()||s) steps.push({t,s,b:r.classList.contains('b')});
+  });
+  o.stages[+inf.dataset.si]={n:inf.querySelector('.ename').value.trim()||'?',steps};
+ });
+ document.querySelectorAll('#enotes .er .et').forEach(i=>{if(i.value.trim()) o.notes.push(i.value.trim())});
+ lsSet(LE+cur.id,JSON.stringify(o));
+ setEdit(false);
+}
+function resetEdit(){
+ if(!confirm('이 작업에서 고친 글을 모두 지우고 원래대로 돌릴까요?')) return;
+ lsSet(LE+cur.id,null); setEdit(false);
+}
+eb.onclick=()=>{ if(!editing) setEdit(true) };
+
+loadData();
+function route(){editing=false;const p=P.find(x=>x.id===location.hash.slice(1));p?(detail(p),scrollTo(0,0)):list()}
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>
