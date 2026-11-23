@@ -54,6 +54,18 @@ td.o{width:20px;color:#fff;background:#55607a;text-align:center;font-size:11px;f
 td.v{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 td.v.q{color:#b3261e}
 td.v small{display:block;font-weight:400;font-size:11px;color:#55607a}
+.sheet{background:#fff;border:2px solid #2b62d9;border-radius:6px;overflow:hidden;margin-bottom:14px}
+.sh-t{background:#2b62d9;color:#ffe600;font-size:18px;font-weight:800;padding:8px 10px;text-align:center}
+.sheet table{margin:0;border-radius:0;font-size:16px}
+.sheet td{padding:7px 10px;border-bottom:1px solid #c9d3e6}
+.sh-h td{background:#222;color:#fff;font-weight:700;text-align:center}
+.sheet tr:nth-child(odd):not(.sh-h):not(.sh-s) td{background:#c9d6ea}
+.sheet td.sn{font-weight:700;width:52%}
+.sheet td.sv{font-variant-numeric:tabular-nums}
+.sheet td.sv b{font-size:18px}
+.sheet td.sv em{font-style:normal;font-weight:700;font-size:14px}
+.sheet td.sv.q b{color:#b3261e}
+.sh-s td{background:#2b3a55;color:#fff;font-weight:800}
 .floor{display:flex;align-items:center;gap:8px;margin:4px 0 8px}
 .floor:before{content:"";flex:1;height:12px;border-radius:2px;background:repeating-linear-gradient(135deg,#5a5a4e 0 3px,#b8b49c 3px 6px,#77735f 6px 8px)}
 .floor span{font-size:15px;font-weight:800;color:#1f2a6b}
@@ -167,7 +179,7 @@ function calc(vals,cols,w){
 function fmt(r,vals){if(r.v==null)return '?';let d=dec(vals);if(!r.ex)d=Math.max(d,1);return r.v.toFixed(d)}
 function extra(v,opt){
  if(!opt||v==null) return '';
- if(opt.bag){const n=Math.floor(v/opt.bag),r=Math.round((v-n*opt.bag)*10)/10;return `${opt.bag}kg × ${n}개${r?' + '+r:''}`}
+ if(opt.bag){const n=Math.floor(v/opt.bag+1e-9),r=Math.round((v-n*opt.bag)*10)/10;return opt.u?`${n}${opt.u}${r?' '+r+'kg':''}`:`${opt.bag}kg × ${n}개${r?' + '+r:''}`}
  if(opt.first){const rest=v-opt.first;return rest>0?`${opt.first} 먼저 + 나머지 ${rest.toFixed(1)}`:`${opt.first} 먼저 ?`}
  return '';
 }
@@ -226,6 +238,14 @@ function detail(p){
  else h+=has?`<div class="wbox"><div class="wrow"><label>총 믹싱량</label><input id="w" type="number" inputmode="decimal" value="${w}"><em>kg</em></div>
  <div class="quick">${p.cols.map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div><div class="state" id="st"></div></div>`
  :`<div class="nobox">배합량 표가 없어서 무게 계산은 안 됩니다 · 재료와 순서만</div>`;
+ if(!editing){
+  let rows='';
+  v.stages.forEach((s,si)=>(p.stages[si]&&p.stages[si].mats||[]).forEach((m,mi)=>{
+   rows+=`<tr><td class="sn">${esc(m[1])}</td>${m[2]&&has?`<td class="sv" data-s="${si}" data-m="${mi}"></td>`:'<td class="sv">-</td>'}</tr>`;
+  }));
+  if(rows) h+=`<div class="sheet"><div class="sh-t"><span id="shT">${esc(p.name)}${has?` ${w}KG`:''}</span> 믹싱 작업 표준서</div>
+  <table><tr class="sh-h"><td>재료명</td><td id="shW">${has?w+'KG':'투입량'}</td></tr>${rows}${has?'<tr class="sh-s"><td>합계</td><td id="shTot"></td></tr>':''}</table></div>`;
+ }
  let fl=null;
  v.stages.forEach((s,si)=>{
   if(si) h+='<div class="pipe"><div></div></div>';
@@ -264,6 +284,14 @@ function detail(p){
    if(r.v==null) q=true; else tot+=r.v;
   });
   document.getElementById('tot').textContent=(q?'? 제외 ':'')+tot.toFixed(1)+' kg';
+  document.querySelectorAll('td.sv[data-s]').forEach(td=>{
+   const m=p.stages[+td.dataset.s].mats[+td.dataset.m];
+   const r=calc(m[2],p.cols,val), x=extra(r.v,m[3]);
+   td.innerHTML=`<b>${esc(fmt(r,m[2]))}</b>${x?` <em>(${esc(x)})</em>`:''}`; td.classList.toggle('q',r.v==null);
+  });
+  document.getElementById('shT').textContent=p.name+' '+val+'KG';
+  document.getElementById('shW').textContent=val+'KG';
+  document.getElementById('shTot').textContent=(q?'? 제외 ':'')+(Math.round(tot*10)/10);
   st.className='state'+(out?' out':'');
   st.textContent=out?'표 범위 밖 ('+p.cols[0]+'~'+p.cols[p.cols.length-1]+'kg) · 비례 계산 · 참고용':ex?'표 값 그대로':'표 사이 값 · 비례 계산';
  };
