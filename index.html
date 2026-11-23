@@ -200,16 +200,24 @@ function list(){
   return;
  }
  let h='<div class="warn">참고용입니다. 실제 투입량은 처방표가 우선 · <b>?</b> 는 확인 필요</div>';
+ h+='<input id="q" type="search" placeholder="검색 (작업 이름 · 재료 이름)" oninput="find(this.value)" style="width:100%;font-size:16px;padding:10px 12px;border:2px solid #2b3a55;border-radius:8px;margin-bottom:6px">';
  let last='';
  P.forEach(p=>{
   const L=/^[0-9]/.test(p.name)?'#':p.name[0].toUpperCase();
-  if(L!==last){h+=`<div class="letter">${L}</div>`;last=L}
+  if(L!==last){h+=`<div class="letter" data-l="${esc(L)}">${L}</div>`;last=L}
   const v=view(p);
-  h+=`<div class="card" onclick="location.hash='${p.id}'"><b>${esc(p.name)}</b>${p.tag?`<i class="tag">${esc(p.tag)}</i>`:''}${v.edited?'<em class="ed">수정함</em>':''}<span>${v.stages.map(s=>esc(s.n)).join(' → ')}</span></div>`;
+  const k=[p.name,p.full,p.tag,...v.stages.map(s=>s.n),...p.stages.flatMap(s=>(s.mats||[]).map(m=>m[1]))].join(' ').toLowerCase();
+  h+=`<div class="card" data-l="${esc(L)}" data-k="${esc(k)}" onclick="location.hash='${p.id}'"><b>${esc(p.name)}</b>${p.tag?`<i class="tag">${esc(p.tag)}</i>`:''}${v.edited?'<em class="ed">수정함</em>':''}<span>${v.stages.map(s=>esc(s.n)).join(' → ')}</span></div>`;
  });
  h+=`<div class="bk"><button onclick="bk(1)">고친 글 백업</button><button onclick="bk(2)">백업 불러오기</button></div><div id="bkArea"></div>`;
  h+=`<div class="bk" style="margin-top:8px"><button onclick="pickData()">데이터 다시 불러오기</button><button onclick="clearData()">데이터 지우기</button></div>`;
  app.innerHTML=h; scrollTo(0,0);
+}
+function find(t){
+ t=t.trim().toLowerCase();
+ const shown={};
+ document.querySelectorAll('.card').forEach(c=>{const ok=!t||c.dataset.k.includes(t);c.style.display=ok?'':'none';if(ok)shown[c.dataset.l]=1});
+ document.querySelectorAll('.letter').forEach(l=>l.style.display=shown[l.dataset.l]?'':'none');
 }
 function bk(m){
  const a=document.getElementById('bkArea'); a.style.display='block';
@@ -308,7 +316,14 @@ function addRow(btn,note){
  const box=btn.previousElementSibling; box.insertAdjacentHTML('beforeend',rowHtml({t:'',s:'',b:false},note));
  box.lastElementChild.querySelector('.et').focus();
 }
-function setEdit(on){editing=on; detail(cur); if(!on) scrollTo(0,0)}
+function setEdit(on){
+ // 화면에 보이던 탱크를 기억했다가 같은 자리에 다시 맞춤
+ const st=[...document.querySelectorAll('.stage')];
+ let a=st.find(e=>e.getBoundingClientRect().bottom>70)||null, ai=a?st.indexOf(a):-1, top=a?a.getBoundingClientRect().top:0;
+ editing=on; detail(cur);
+ const n=document.querySelectorAll('.stage')[ai];
+ if(n) scrollBy(0,n.getBoundingClientRect().top-top);
+}
 function saveEdit(){
  const o={stages:[],notes:[]};
  document.querySelectorAll('.info[data-si]').forEach(inf=>{
