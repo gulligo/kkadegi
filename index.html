@@ -54,6 +54,9 @@ td.o{width:20px;color:#fff;background:#55607a;text-align:center;font-size:11px;f
 td.v{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
 td.v.q{color:#b3261e}
 td.v small{display:block;font-weight:400;font-size:11px;color:#55607a}
+.floor{display:flex;align-items:center;gap:8px;margin:4px 0 8px}
+.floor:before{content:"";flex:1;height:12px;border-radius:2px;background:repeating-linear-gradient(135deg,#5a5a4e 0 3px,#b8b49c 3px 6px,#77735f 6px 8px)}
+.floor span{font-size:15px;font-weight:800;color:#1f2a6b}
 .pipe{width:104px;display:flex;justify-content:center;height:26px}
 .pipe div{width:4px;background:#7d8696;position:relative}
 .pipe div:after{content:"";position:absolute;bottom:-2px;left:-6px;border:8px solid transparent;border-top:9px solid #7d8696;border-bottom:0}
@@ -100,6 +103,14 @@ const SVG={
  mobile:()=>`<rect x="38" y="6" width="24" height="14" rx="2" fill="#5fd3d3" stroke="#2a6f75"/><rect x="22" y="22" width="56" height="58" rx="8" fill="#a3a9b0" stroke="#666" stroke-width="1.5"/><line x1="50" y1="20" x2="50" y2="62" stroke="#3a3" stroke-width="3"/><path d="M34 62 L66 62" stroke="#3a3" stroke-width="6" stroke-linecap="round"/><circle cx="30" cy="92" r="8" fill="#333"/><circle cx="70" cy="92" r="8" fill="#333"/>`,
  small:()=>`<rect x="32" y="36" width="36" height="46" rx="8" fill="#d8dce2" stroke="#666" stroke-width="1.5"/><line x1="50" y1="28" x2="50" y2="72" stroke="#555" stroke-width="2"/><path d="M40 72 L60 72" stroke="#d33" stroke-width="4" stroke-linecap="round"/>${M(50,20,"#b7a3f0")}`,
  trough:()=>`<path d="M10 40 L10 82 L90 82 L90 40" fill="#fff" stroke="#555" stroke-width="2"/><rect x="12" y="62" width="76" height="18" fill="#c9d6f0"/><text x="50" y="34" font-size="10" text-anchor="middle" fill="#555">레벨 T/K</text>`
+};
+
+// 3층 바닥: 믹서는 바닥을 뚫고 2층 천장까지 내려옴
+const HATCH=`<defs><pattern id="hp" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#b8b49c"/><rect width="2.5" height="6" fill="#5a5a4e"/></pattern></defs>`;
+const SLAB={
+ mixer:`${HATCH}<rect x="0" y="60" width="100" height="9" fill="url(#hp)"/>`,
+ mobile:`${HATCH}<rect x="0" y="101" width="100" height="8" fill="url(#hp)"/>`,
+ small:`${HATCH}<rect x="0" y="84" width="100" height="8" fill="url(#hp)"/>`
 };
 
 // ===== 저장 (내가 고친 글) =====
@@ -209,16 +220,18 @@ function detail(p){
  document.getElementById('ttl').textContent=p.name;
  document.getElementById('sub').textContent=p.tag||'공정순서';
  const v=view(p), has=p.cols.length>0;
- let w; if(has){w=parseFloat(lsGet(LS+p.id)); if(!w) w=p.cols[p.cols.length-1];}
+ let w; if(has){w=p.def||p.cols[p.cols.length-1];}
  let h=p.full?`<div class="full">${esc(p.full)}</div>`:'';
  if(editing) h+='<div class="ehelp">글을 고치거나 ✕로 지우고, + 로 줄을 추가하세요.<br>! 버튼 = 빨간 강조 · 초록 칸 = 그 줄의 교반속도(Hz)<br>저장하면 이 폰에만 저장됩니다.</div>';
  else h+=has?`<div class="wbox"><div class="wrow"><label>총 믹싱량</label><input id="w" type="number" inputmode="decimal" value="${w}"><em>kg</em></div>
  <div class="quick">${p.cols.map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div><div class="state" id="st"></div></div>`
  :`<div class="nobox">배합량 표가 없어서 무게 계산은 안 됩니다 · 재료와 순서만</div>`;
+ let fl=null;
  v.stages.forEach((s,si)=>{
   if(si) h+='<div class="pipe"><div></div></div>';
+  if(s.f&&s.f!==fl){h+=`<div class="floor"><span>${s.f}층</span></div>`;fl=s.f;}
   const sp=speeds(s.steps);
-  h+=`<div class="stage"><div class="pic"><svg viewBox="0 0 100 110">${SVG[s.t](s.fill)}</svg><div class="plate p-${s.t}">${esc(s.n)}</div>${sp.length?`<div class="hz">교반 ${esc(sp.join(' → '))} Hz</div>`:''}</div><div class="info" data-si="${si}">`;
+  h+=`<div class="stage"><div class="pic"><svg viewBox="0 0 100 110">${SVG[s.t](s.fill)}${s.f===3?SLAB[s.t]||'':''}</svg><div class="plate p-${s.t}">${esc(s.n)}</div>${sp.length?`<div class="hz">교반 ${esc(sp.join(' → '))} Hz</div>`:''}</div><div class="info" data-si="${si}">`;
   if(editing){
    h+=`<input class="ename" value="${esc(s.n)}"><div class="rows">${s.steps.map(x=>rowHtml(x)).join('')}</div><button class="add" onclick="addRow(this)">+ 줄 추가</button>`;
   } else {
