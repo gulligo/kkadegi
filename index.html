@@ -179,6 +179,7 @@ function calc(vals,cols,w){
 function fmt(r,vals){if(r.v==null)return '?';let d=dec(vals);if(!r.ex)d=Math.max(d,1);return r.v.toFixed(d)}
 function extra(v,opt){
  if(!opt||v==null) return '';
+ if(opt.pal){const p=Math.floor(v/opt.pal+1e-9),rem=v-p*opt.pal,n=Math.floor(rem/opt.bag+1e-9),r=Math.round((rem-n*opt.bag)*10)/10;return [p?p+'파레트':'',n?n+opt.u:'',r?r+'kg':''].filter(Boolean).join(' ')}
  if(opt.bag){const n=Math.floor(v/opt.bag+1e-9),r=Math.round((v-n*opt.bag)*10)/10;return opt.u?`${n}${opt.u}${r?' '+r+'kg':''}`:`${opt.bag}kg × ${n}개${r?' + '+r:''}`}
  if(opt.first){const rest=v-opt.first;return rest>0?`${opt.first} 먼저 + 나머지 ${rest.toFixed(1)}`:`${opt.first} 먼저 ?`}
  return '';
