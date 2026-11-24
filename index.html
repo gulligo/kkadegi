@@ -143,7 +143,7 @@ function view(p){ // 기본 데이터 + 내가 고친 글 합치기
 const LD="kkadegi_data";
 function loadData(){
  P=[]; try{const d=JSON.parse(lsGet(LD)); if(d&&Array.isArray(d.products)) P=d.products}catch(e){}
- P.sort((a,b)=>a.name.localeCompare(b.name,'en',{numeric:true}));
+ P.sort((a,b)=>(a.key||a.name).localeCompare(b.key||b.name,'en',{numeric:true}));
 }
 function pickData(){
  const f=document.createElement('input'); f.type='file';
@@ -204,7 +204,7 @@ function list(){
  h+='<input id="q" type="search" placeholder="검색 (작업 이름 · 재료 이름)" oninput="find(this.value)" style="width:100%;font-size:16px;padding:10px 12px;border:2px solid #2b3a55;border-radius:8px;margin-bottom:6px">';
  let last='';
  P.forEach(p=>{
-  const L=/^[0-9]/.test(p.name)?'#':p.name[0].toUpperCase();
+  const K=p.key||p.name, L=/^[0-9]/.test(K)?'#':K[0].toUpperCase();
   if(L!==last){h+=`<div class="letter" data-l="${esc(L)}">${L}</div>`;last=L}
   const v=view(p);
   const k=[p.name,p.full,p.tag,...v.stages.map(s=>s.n),...p.stages.flatMap(s=>(s.mats||[]).map(m=>m[1]))].join(' ').toLowerCase();
